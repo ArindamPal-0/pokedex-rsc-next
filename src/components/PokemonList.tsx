@@ -1,19 +1,20 @@
+import Link from "next/link";
 import { z } from "zod";
 
 export default async function PokemonList() {
     // API URL Zod Schema
-    const APISchema = z.string().url();
+    const ApiUrlSchema = z.string().url();
 
-    const result = APISchema.safeParse(process.env.POKE_API_BASEURL);
-    if (!result.success) {
-        if (result.error.errors[0].message === "Invalid url") {
+    const apiUrlResult = ApiUrlSchema.safeParse(process.env.POKE_API_BASEURL);
+    if (!apiUrlResult.success) {
+        if (apiUrlResult.error.errors[0].message === "Invalid url") {
             throw new Error("API URL should be of a proper URL format.");
         }
 
         throw new Error("API URL should not be undefined.");
     }
 
-    const url = new URL("index.json", result.data);
+    const url = new URL("index.json", apiUrlResult.data);
 
     // Pokemon Zod Schema
     const PokemonSchema = z.object({
@@ -29,13 +30,19 @@ export default async function PokemonList() {
         .then((res) => res.json())
         .then((value) => PokemonListSchema.parseAsync(value));
 
-    // await new Promise((resol ve) => setTimeout(resolve, 2000));
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
 
     return (
         <>
-            <section>
+            <section className="flex flex-col items-center justify-start gap-2">
                 {pokemonList.slice(0, 20).map((pokemon) => (
-                    <div key={pokemon.id}>{pokemon.name}</div>
+                    <Link
+                        className="text-blue-400 hover:text-blue-600"
+                        href={`/pokemon/${pokemon.id}`}
+                        key={pokemon.id}
+                    >
+                        {pokemon.name}
+                    </Link>
                 ))}
             </section>
         </>

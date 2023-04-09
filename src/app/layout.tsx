@@ -1,3 +1,4 @@
+import Link from "next/link";
 import "./globals.css";
 
 export const metadata = {
@@ -15,9 +16,11 @@ export default function RootLayout({
             <body>
                 <section className="flex min-h-screen flex-col items-center justify-start gap-4 p-24">
                     <header>
-                        <h1 className="text-3xl font-semibold underline">
-                            Pokédex
-                        </h1>
+                        <Link href="/">
+                            <h1 className="text-3xl font-semibold underline">
+                                Pokédex
+                            </h1>
+                        </Link>
                     </header>
                     <main>{children}</main>
                 </section>

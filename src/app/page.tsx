@@ -5,9 +5,10 @@ import { Suspense } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default async function Home() {
+export default async function HomePage() {
     return (
         <Suspense fallback={<Loading />}>
+            {/* @ts-expect-error Async Server Component */}
             <PokemonList />
         </Suspense>
     );
