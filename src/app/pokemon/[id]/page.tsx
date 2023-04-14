@@ -1,11 +1,12 @@
-import Loading from "@/components/Loading";
 import PokemonDetails, {
     PokemonDetailsSchema,
 } from "@/components/PokemonDetail";
-import { Metadata, ResolvingMetadata } from "next";
+import { PokemonListSchema } from "@/components/PokemonList";
+import { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
 import { z } from "zod";
+
+export const dynamicParams = false;
 
 interface Props {
     params: { id: string };
@@ -19,13 +20,11 @@ const ParamsObjectSchema = z.object({
     ),
 });
 
-export async function generateMetadata(
-    { params }: Props,
-    parent?: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const paramsResult = ParamsObjectSchema.safeParse(params);
     if (!paramsResult.success) {
-        throw new Error("Invalid Pokemon id.");
+        return {};
+        // throw new Error("Invalid Pokemon id.");
     }
 
     const { id } = paramsResult.data;
@@ -39,6 +38,19 @@ export async function generateMetadata(
     return {
         title: pokemon.name,
     };
+}
+
+// Return a list of `params` to populate the [id] dynamic segment
+export async function generateStaticParams() {
+    const url = new URL("index.json", process.env.POKE_API_BASEURL);
+
+    const pokemonList = await fetch(url)
+        .then((res) => res.json())
+        .then((value) => PokemonListSchema.parseAsync(value));
+
+    return pokemonList.map((pokemon) => ({
+        id: pokemon.id.toString(),
+    }));
 }
 
 export default async function PokemonDetailsPage({ params }: Props) {
@@ -71,10 +83,10 @@ export default async function PokemonDetailsPage({ params }: Props) {
                 </svg>
                 <span>back</span>
             </Link>
-            <Suspense fallback={<Loading />}>
-                {/* @ts-expect-error Async Server Component */}
-                <PokemonDetails id={paramsResult.data.id} />
-            </Suspense>
+            {/* <Suspense fallback={<Loading />}> */}
+            {/* @ts-expect-error Async Server Component */}
+            <PokemonDetails id={paramsResult.data.id} />
+            {/* </Suspense> */}
         </section>
     );
 }

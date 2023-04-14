@@ -1,30 +1,18 @@
 import Link from "next/link";
 import { z } from "zod";
 
+// Pokemon Zod Schema
+export const PokemonSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    image: z.string(),
+});
+
+// Pokemon List Zod Schema
+export const PokemonListSchema = z.array(PokemonSchema);
+
 export default async function PokemonList() {
-    // API URL Zod Schema
-    const ApiUrlSchema = z.string().url();
-
-    const apiUrlResult = ApiUrlSchema.safeParse(process.env.POKE_API_BASEURL);
-    if (!apiUrlResult.success) {
-        if (apiUrlResult.error.errors[0].message === "Invalid url") {
-            throw new Error("API URL should be of a proper URL format.");
-        }
-
-        throw new Error("API URL should not be undefined.");
-    }
-
-    const url = new URL("index.json", apiUrlResult.data);
-
-    // Pokemon Zod Schema
-    const PokemonSchema = z.object({
-        id: z.number(),
-        name: z.string(),
-        image: z.string(),
-    });
-
-    // Pokemon List Zod Schema
-    const PokemonListSchema = z.array(PokemonSchema);
+    const url = new URL("index.json", process.env.POKE_API_BASEURL);
 
     const pokemonList = await fetch(url, { cache: "no-cache" })
         .then((res) => res.json())

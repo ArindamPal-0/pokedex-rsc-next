@@ -24,7 +24,7 @@ export default async function PokemonDetails({ id }: { id: number }) {
         .then((res) => res.json())
         .then((value) => PokemonDetailsSchema.parseAsync(value));
 
-    console.log(pokemon.image);
+    // console.log(pokemon.image);
 
     return (
         <section className="flex w-80 flex-col items-center justify-center gap-2 rounded border-2">
