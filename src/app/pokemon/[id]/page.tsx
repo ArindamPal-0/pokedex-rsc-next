@@ -1,22 +1,47 @@
 import Loading from "@/components/Loading";
-import PokemonDetails from "@/components/PokemonDetail";
+import PokemonDetails, {
+    PokemonDetailsSchema,
+} from "@/components/PokemonDetail";
+import { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { z } from "zod";
 
-export default async function PokemonDetailsPage({
-    params,
-}: {
+interface Props {
     params: { id: string };
-}) {
-    // id validation Zod Schema
-    const ParamsObjectSchema = z.object({
-        id: z.preprocess(
-            (val) => parseInt(z.string().parse(val), 10),
-            z.number().positive()
-        ),
-    });
+}
 
+// id validation Zod Schema
+const ParamsObjectSchema = z.object({
+    id: z.preprocess(
+        (val) => parseInt(z.string().parse(val), 10),
+        z.number().positive()
+    ),
+});
+
+export async function generateMetadata(
+    { params }: Props,
+    parent?: ResolvingMetadata
+): Promise<Metadata> {
+    const paramsResult = ParamsObjectSchema.safeParse(params);
+    if (!paramsResult.success) {
+        throw new Error("Invalid Pokemon id.");
+    }
+
+    const { id } = paramsResult.data;
+
+    const url = new URL(`pokemon/${id}.json`, process.env.POKE_API_BASEURL);
+
+    const pokemon = await fetch(url)
+        .then((res) => res.json())
+        .then((value) => PokemonDetailsSchema.parseAsync(value));
+
+    return {
+        title: pokemon.name,
+    };
+}
+
+export default async function PokemonDetailsPage({ params }: Props) {
     const paramsResult = ParamsObjectSchema.safeParse(params);
     if (!paramsResult.success) {
         throw new Error("Invalid Pokemon id.");
