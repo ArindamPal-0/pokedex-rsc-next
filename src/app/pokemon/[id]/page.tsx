@@ -1,8 +1,6 @@
 import BackButton from "@/components/BackButton";
-import PokemonDetails, {
-    PokemonDetailsSchema,
-} from "@/components/PokemonDetail";
-import { PokemonListSchema } from "@/components/PokemonList";
+import PokemonDetails from "@/components/PokemonDetails";
+import { getPokemonDetail, getPokemonList } from "@/pokemonApi";
 import { Metadata } from "next";
 import { z } from "zod";
 
@@ -29,11 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const { id } = paramsResult.data;
 
-    const url = new URL(`pokemon/${id}.json`, process.env.POKE_API_BASEURL);
-
-    const pokemon = await fetch(url)
-        .then((res) => res.json())
-        .then((value) => PokemonDetailsSchema.parseAsync(value));
+    const pokemon = await getPokemonDetail(id);
 
     return {
         title: pokemon.name,
@@ -44,9 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export async function generateStaticParams() {
     const url = new URL("index.json", process.env.POKE_API_BASEURL);
 
-    const pokemonList = await fetch(url)
-        .then((res) => res.json())
-        .then((value) => PokemonListSchema.parseAsync(value));
+    const pokemonList = await getPokemonList();
 
     return pokemonList.map((pokemon) => ({
         id: pokemon.id.toString(),

@@ -1,16 +1,5 @@
 import { getPokemonList, getPokemonListLength } from "@/pokemonApi";
 import Link from "next/link";
-import { z } from "zod";
-
-// Pokemon Zod Schema
-export const PokemonSchema = z.object({
-    id: z.number(),
-    name: z.string(),
-    image: z.string(),
-});
-
-// Pokemon List Zod Schema
-export const PokemonListSchema = z.array(PokemonSchema);
 
 interface Props {
     page: number;
