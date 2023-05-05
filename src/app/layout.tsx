@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { z } from "zod";
 import "./globals.css";
@@ -26,15 +27,32 @@ export default function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
+    const url = new URL("pokeball.png", process.env.POKE_API_BASEURL);
     return (
         <html lang="en">
+            {/* <head>
+                <link
+                    rel="icon"
+                    href={url.href}
+                    type="image/png"
+                />
+            </head> */}
             <body>
-                <section className="flex min-h-screen flex-col items-center justify-start gap-4 p-24">
+                <section className="flex min-h-screen flex-col items-center justify-start gap-4 p-5">
                     <header>
-                        <Link href="/">
+                        <Link
+                            href="/"
+                            className="flex items-center justify-center gap-2"
+                        >
                             <h1 className="text-3xl font-semibold underline">
                                 Pokédex
                             </h1>
+                            <Image
+                                src={url.href}
+                                alt="pokeball"
+                                width={40}
+                                height={40}
+                            />
                         </Link>
                     </header>
                     <main>{children}</main>
